@@ -16,7 +16,7 @@
 
        			// Launches a new browser, which can be controlled by this script.
        			driver = webdriver.WebDriver.createSession(executor, {
-       				'browserName': 'internet explorer',
+       				'browserName': 'firefox',
        				'version': '',
        				'platform': 'ANY',
        				'javascriptEnabled': true
@@ -46,7 +46,6 @@
        		var existingRowsCount = 0;
        		driver.findElements(webdriver.By.className('slick-row')).then(function (elements) {
        			existingRowsCount = elements.length;
-
        			elements[0].click();
        		});
 
@@ -55,14 +54,11 @@
        		});
 
        		driver.findElement(webdriver.By.id("btnPaste")).then(function (btn) {
-       			btn.click().then(function () {
-       				driver.wait(function () {
-       					return driver.findElement(webdriver.By.className("messagebox-overlay")).then(function() {
-       						driver.findElements(webdriver.By.className('slick-row')).then(function (elements) {
-       							start();
-       							equal(elements.length, existingRowsCount + 1);
-       						});
-       					});
+       			btn.click();
+       			driver.findElement(webdriver.By.className("messagebox-overlay")).then(function() {
+       				driver.findElements(webdriver.By.className('slick-row')).then(function (elements) {
+       					start();
+       					equal(elements.length, existingRowsCount + 1);
        				});
        			});
        		});
