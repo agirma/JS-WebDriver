@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<title></title>
+		<script src="javascript/webdriver.js"> </script>
+		<script src="javascript/qunit.js"> </script>
+		<script src="javascript/jQuery.js"> </script>
+		<link rel="stylesheet" href="javascript/qunit.css" type="text/css" />
+	</head>
+	<script>
+
+       		var driver;
+       		module("webdriver", {
+       			setup: function() {
+       				var client = new webdriver.http.CorsClient('http://localhost:4444/wd/hub');
+       				var executor = new webdriver.http.Executor(client);
+
+       				// Launches a new browser, which can be controlled by this script.
+       				driver = webdriver.WebDriver.createSession(executor, {
+       					'browserName': 'chrome',
+       					'version': '',
+       					'platform': 'ANY',
+       					'javascriptEnabled': true
+       				});
+       				driver.manage().timeouts().implicitlyWait(1000);
+       			},
+       			teardown: function() {
+       				driver.quit();
+       			}
+       		});
+
+       		asyncTest("Clean promise", function() {
+       			expect(1);
+       			driver.get('http://www.google.com');
+
+       			var searchBox = driver.findElement(webdriver.By.name('q'));
+       			searchBox.sendKeys('webdriver');
+
+       			var submitButton = driver.findElement(webdriver.By.name('btnG'));
+       			submitButton.click();
+       			driver.findElement(webdriver.By.id("search")).then(function() {
+       				driver.getTitle().then(function(title) {
+       					start();
+       					equal(title, 'webdriver - Google Search');
+       				});
+       			});
+       		});
+       	</script>
+	<body>
+		<h1 id="qunit-header"></h1>
+		<h2 id="qunit-banner" class="qunit-pass"></h2>
+		<div id="qunit-testrunner-toolbar" style="display: none;">
+			<input type="checkbox" id="qunit-filter-pass" disabled="">
+			<label for="qunit-filter-pass">Hide passed tests</label>
+			<input type="checkbox" id="qunit-filter-missing" disabled="">
+			<label for="qunit-filter-missing">Hide missing tests (untested code is broken code)</label>
+		</div>
+		<h2 id="qunit-userAgent"></h2>
+		<ol id="qunit-tests"></ol>
+		<p id="qunit-testresult" class="result"></p>
+	</body>
+</html>

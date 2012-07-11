@@ -1,0 +1,84 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<title></title>
+		<script src="javascript/webdriver.js"> </script>
+		<script src="javascript/jQuery.js"> </script>
+		<script src="javascript/qunit.js"> </script>
+		<link rel="stylesheet" href="javascript/qunit.css" type="text/css" />
+	</head>
+	<script>
+       	var driver;
+       	module("webdriver", {
+       		setup: function() {
+       			var client = new webdriver.http.CorsClient('http://localhost:4444/wd/hub');
+       			var executor = new webdriver.http.Executor(client);
+
+       			// Launches a new browser, which can be controlled by this script.
+       			driver = webdriver.WebDriver.createSession(executor, {
+       				'browserName': 'internet explorer',
+       				'version': '',
+       				'platform': 'ANY',
+       				'javascriptEnabled': true
+       			});
+       			driver.manage().timeouts().implicitlyWait(1000);
+       		},
+       		teardown: function() {
+       			driver.quit();
+       		}
+       	});
+       	
+		
+
+       	asyncTest("Should copy and paste assignee field", function () {
+       		expect(1);
+       		driver.get('http://jboland-w7e.hq.daptiv.com/root/Applications/DynamicApp/DynamicAppGrid.aspx?oid=520de04e-379d-4064-8f87-48b314e4fd11|c54fa0a4-d965-4a79-b6a8-e80fd6218d17')
+
+       		var userName = driver.findElement(webdriver.By.id('email'));
+       		userName.sendKeys('jboland@daptiv.com');
+
+       		var password = driver.findElement(webdriver.By.id('password'));
+       		password.sendKeys('password');
+
+       		var loginButton = driver.findElement(webdriver.By.id('login-btn'));
+       		loginButton.click();
+
+       		var existingRowsCount = 0;
+       		driver.findElements(webdriver.By.className('slick-row')).then(function (elements) {
+       			existingRowsCount = elements.length;
+
+       			elements[0].click();
+       		});
+
+       		driver.findElement(webdriver.By.id("btnCopy")).then(function (btn) {
+       			btn.click();
+       		});
+
+       		driver.findElement(webdriver.By.id("btnPaste")).then(function (btn) {
+       			btn.click().then(function () {
+       				driver.wait(function () {
+       					return driver.findElement(webdriver.By.className("messagebox-overlay")).then(function() {
+       						driver.findElements(webdriver.By.className('slick-row')).then(function (elements) {
+       							start();
+       							equal(elements.length, existingRowsCount + 1);
+       						});
+       					});
+       				});
+       			});
+       		});
+       	});
+       	</script>
+	<body>
+		<h1 id="qunit-header"></h1>
+		<h2 id="qunit-banner" class="qunit-pass"></h2>
+		<div id="qunit-testrunner-toolbar" style="display: none;">
+			<input type="checkbox" id="qunit-filter-pass" disabled="">
+			<label for="qunit-filter-pass">Hide passed tests</label>
+			<input type="checkbox" id="qunit-filter-missing" disabled="">
+			<label for="qunit-filter-missing">Hide missing tests (untested code is broken code)</label>
+		</div>
+		<h2 id="qunit-userAgent"></h2>
+		<ol id="qunit-tests"></ol>
+		<p id="qunit-testresult" class="result"></p>
+	</body>
+</html>
